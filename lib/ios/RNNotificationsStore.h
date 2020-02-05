@@ -4,6 +4,7 @@
 @interface RNNotificationsStore : NSObject
 
 @property (nonatomic, retain) NSDictionary* initialNotification;
+@property (nonatomic, retain) NSString *token;
 
 + (instancetype)sharedInstance;
 

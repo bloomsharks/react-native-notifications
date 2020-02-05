@@ -89,6 +89,10 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTPromiseResolveBlock)resolve
     [_commandsHandler checkPermissions:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    resolve([[RNNotificationsStore sharedInstance] token]);
+}
+
 #if !TARGET_OS_TV
 
 RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {

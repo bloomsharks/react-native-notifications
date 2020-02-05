@@ -16,6 +16,7 @@
 
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(id)deviceToken {
     NSString *tokenRepresentation = [deviceToken isKindOfClass:[NSString class]] ? deviceToken : [RNNotificationUtils deviceTokenToString:deviceToken];
+    [[RNNotificationsStore sharedInstance] setToken:tokenRepresentation];
     [RNEventEmitter sendEvent:RNRegistered body:@{@"deviceToken": tokenRepresentation}];
 }
 
