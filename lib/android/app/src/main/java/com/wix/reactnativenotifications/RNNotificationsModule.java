@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -15,6 +17,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.google.firebase.iid.InstanceIdResult;
 import com.wix.reactnativenotifications.core.AppLifecycleFacadeHolder;
 import com.wix.reactnativenotifications.core.InitialNotificationHolder;
 import com.wix.reactnativenotifications.core.NotificationIntentAdapter;
@@ -25,6 +28,9 @@ import com.wix.reactnativenotifications.core.notification.PushNotificationProps;
 import com.wix.reactnativenotifications.core.notificationdrawer.IPushNotificationsDrawer;
 import com.wix.reactnativenotifications.core.notificationdrawer.PushNotificationsDrawer;
 import com.wix.reactnativenotifications.fcm.FcmInstanceIdRefreshHandlerService;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import static com.wix.reactnativenotifications.Defs.LOGTAG;
 
@@ -132,5 +138,23 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         final Intent tokenFetchIntent = new Intent(appContext, FcmInstanceIdRefreshHandlerService.class);
         tokenFetchIntent.putExtra(extraFlag, true);
         appContext.startService(tokenFetchIntent);
+    }
+
+    @ReactMethod
+    public void getToken(final Promise promise) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String sToken = instanceIdResult.getToken();
+                promise.resolve(sToken);
+                Log.i(LOGTAG, "FCM has a token" + "=" + sToken);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                promise.resolve(e.getMessage());
+                Log.i(LOGTAG, "Error getting FCM token");
+            }
+        });
     }
 }
